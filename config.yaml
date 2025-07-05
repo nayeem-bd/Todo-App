@@ -1,0 +1,17 @@
+server:
+  port: "8080"
+
+database:
+  host: 127.0.0.1
+  port: 5432
+  name: todoapp
+  username: root
+  password: secret
+  options:
+    sslmode:
+      - disable
+  max_idle_connection: 2
+  max_open_connection: 2
+  max_connection_lifetime: 300
+  batch_size: 10
+  slow_threshold: 10
