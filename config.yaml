@@ -3,6 +3,7 @@ server:
 
 database:
   host: 127.0.0.1
+#  host: docker.for.mac.localhost
   port: 5432
   name: todoapp
   username: root

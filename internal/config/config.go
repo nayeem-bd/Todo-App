@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"github.com/nayeem-bd/Todo-App/internal/logger"
 	"github.com/spf13/viper"
 )
 
@@ -39,10 +40,19 @@ func LoadConfig(path string) (*Config, error) {
 
 	v.AutomaticEnv()
 	v.SetEnvPrefix("APP")
+
+	// Bind environment variables for server
 	_ = v.BindEnv("server.port")
 
+	// Bind environment variables for database
+	_ = v.BindEnv("database.host", "DB_HOST")
+	_ = v.BindEnv("database.port", "DB_PORT")
+	_ = v.BindEnv("database.name", "DB_NAME")
+	_ = v.BindEnv("database.username", "DB_USER")
+	_ = v.BindEnv("database.password", "DB_PASSWORD")
+
 	if err := v.ReadInConfig(); err != nil {
-		fmt.Printf("Warning: Failed to read config file: %v\n", err)
+		logger.Warn("Warning: Failed to read config file: %v\n", err)
 	}
 	var cfg Config
 	if err := v.Unmarshal(&cfg); err != nil {

@@ -2,9 +2,9 @@ package config
 
 import (
 	"fmt"
+	"github.com/nayeem-bd/Todo-App/internal/logger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
 	"time"
 )
 
@@ -24,7 +24,7 @@ func ConnectDatabase(dbConfig DatabaseConfig) (*gorm.DB, error) {
 	sqlDB.SetMaxOpenConns(dbConfig.MaxOpenConnection)
 	sqlDB.SetConnMaxLifetime(time.Duration(dbConfig.MaxConnectionLifetime) * time.Second)
 
-	log.Printf("Connected to PostgreSQL database")
+	logger.Info("Connected to PostgreSQL database")
 	return db, nil
 }
 
