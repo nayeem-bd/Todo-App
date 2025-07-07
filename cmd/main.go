@@ -9,6 +9,7 @@ import (
 	"github.com/nayeem-bd/Todo-App/internal/config"
 	"github.com/nayeem-bd/Todo-App/internal/logger"
 	loggerMiddleware "github.com/nayeem-bd/Todo-App/internal/middleware"
+	"github.com/nayeem-bd/Todo-App/internal/migrations"
 	"net/http"
 	"os"
 	"os/signal"
@@ -26,6 +27,9 @@ func main() {
 	if err != nil {
 		logger.Fatal("Failed to connect to database:", err)
 	}
+
+	// migrations
+	migrations.Migrate(db)
 
 	addr := fmt.Sprintf(":%s", cfg.Server.Port)
 

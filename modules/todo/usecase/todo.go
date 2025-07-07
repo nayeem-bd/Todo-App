@@ -29,3 +29,7 @@ func (todoUsecase *TodoUsecase) Create(ctx context.Context, todo *domain.Todo) (
 	}
 	return createdTodo, nil
 }
+
+func (todoUsecase *TodoUsecase) GetByID(ctx context.Context, id int) (*domain.Todo, error) {
+	return todoUsecase.store.TodoRepository().GetByID(ctx, id)
+}

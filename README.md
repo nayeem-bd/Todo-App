@@ -213,43 +213,104 @@ docker system prune          # Clean up unused resources
 ## 🔗 API Endpoints
 
 ### Todo Operations
-| Method | Endpoint | Description | Request Body |
-|--------|----------|-------------|--------------|
-| GET    | `/todos` | List all todos | - |
-| GET    | `/todos/{id}` | Get todo by ID | - |
-| POST   | `/todos` | Create new todo | `{"title": "string", "description": "string", "completed": boolean}` |
-| PUT    | `/todos/{id}` | Update todo | `{"title": "string", "description": "string", "completed": boolean}` |
-| DELETE | `/todos/{id}` | Delete todo | - |
+| Method | Endpoint | Description | Request Body | Response |
+|--------|----------|-------------|--------------|----------|
+| GET    | `/api/v1/todos` | List all todos | - | Array of todos |
+| GET    | `/api/v1/todos/{id}` | Get todo by ID | - | Single todo object |
+| POST   | `/api/v1/todos` | Create new todo | Todo object | Created todo |
+
+### Request/Response Format
+
+#### Create Todo Request
+```json
+{
+  "title": "string (required, 3-150 chars)",
+  "description": "string (required, 5-500 chars)", 
+  "category": "string (optional, max 50 chars)"
+}
+```
+
+#### Todo Response Object
+```json
+{
+  "id": 1,
+  "title": "Learn Clean Architecture",
+  "description": "Study hexagonal architecture patterns in Go",
+  "category": "learning",
+  "created_at": "2025-01-07T10:30:00Z",
+  "updated_at": "2025-01-07T10:30:00Z",
+  "done_at": null
+}
+```
+
+#### Success Response Format
+```json
+{
+  "success": true,
+  "message": "Todo created successfully",
+  "data": {
+    // Todo object or array of todos
+  }
+}
+```
+
+#### Error Response Format
+```json
+{
+  "error": true,
+  "message": "Validation failed",
+  "status_code": 400,
+  "errors": {
+    // Validation errors or error details
+  }
+}
+```
 
 ### Example API Usage
+
+#### Create a Todo
 ```bash
-# Create a todo
-curl -X POST http://localhost:8080/todos \
+curl -X POST http://localhost:8080/api/v1/todos \
   -H "Content-Type: application/json" \
   -d '{
     "title": "Learn Clean Architecture",
     "description": "Study hexagonal architecture patterns in Go",
-    "completed": false
+    "category": "learning"
   }'
-
-# Get all todos
-curl http://localhost:8080/todos
-
-# Get specific todo
-curl http://localhost:8080/todos/1
-
-# Update todo
-curl -X PUT http://localhost:8080/todos/1 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Master Clean Architecture",
-    "description": "Implement hexagonal architecture in production",
-    "completed": true
-  }'
-
-# Delete todo
-curl -X DELETE http://localhost:8080/todos/1
 ```
+
+#### Get All Todos
+```bash
+curl http://localhost:8080/api/v1/todos
+```
+
+#### Get Specific Todo
+```bash
+curl http://localhost:8080/api/v1/todos/1
+```
+
+### Status Codes
+- `200 OK` - Successful GET requests
+- `201 Created` - Successful POST requests
+- `400 Bad Request` - Invalid request body or parameters
+- `404 Not Found` - Todo not found
+- `500 Internal Server Error` - Server errors
+
+### Current Limitations
+- **Update Operations**: PUT/PATCH endpoints not yet implemented
+- **Delete Operations**: DELETE endpoint not yet implemented  
+- **Pagination**: All todos returned without pagination
+- **Filtering**: No filtering or search capabilities
+- **Authentication**: No authentication/authorization implemented
+
+### Planned Enhancements
+- [ ] Add UPDATE todo endpoint (`PUT /api/v1/todos/{id}`)
+- [ ] Add DELETE todo endpoint (`DELETE /api/v1/todos/{id}`)
+- [ ] Add mark as complete/incomplete functionality
+- [ ] Implement pagination with query parameters
+- [ ] Add filtering and search capabilities
+- [ ] Add authentication and authorization
+- [ ] Add todo categories and tags
 
 ## 🧪 Development Workflow
 

@@ -10,6 +10,7 @@ func SetupRouter(r *chi.Mux, h *Handler) http.Handler {
 		r.Route("/todos", func(r chi.Router) {
 			r.Get("/", h.TodoHandler.GetTodos)
 			r.Post("/", h.TodoHandler.CreateTodo)
+			r.Get("/{id}", h.TodoHandler.GetTodoByID)
 		})
 	})
 

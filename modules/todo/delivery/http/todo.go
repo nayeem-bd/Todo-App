@@ -2,10 +2,13 @@ package handler
 
 import (
 	"encoding/json"
+	"net/http"
+	"strconv"
+
+	"github.com/go-chi/chi/v5"
 	"github.com/nayeem-bd/Todo-App/domain"
 	"github.com/nayeem-bd/Todo-App/domain/dto"
 	"github.com/nayeem-bd/Todo-App/internal/utils"
-	"net/http"
 )
 
 type TodoHandler struct {
@@ -53,4 +56,31 @@ func (todoHandler *TodoHandler) CreateTodo(w http.ResponseWriter, r *http.Reques
 	}
 
 	utils.WriteSuccess(w, http.StatusCreated, "Todo created successfully", createdTodo)
+}
+
+func (todoHandler *TodoHandler) GetTodoByID(w http.ResponseWriter, r *http.Request) {
+	todoIDStr := chi.URLParam(r, "id")
+	if todoIDStr == "" {
+		utils.WriteError(w, http.StatusBadRequest, "Todo ID is required", nil)
+		return
+	}
+
+	todoID, err := strconv.Atoi(todoIDStr)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, "Invalid todo ID format", nil)
+		return
+	}
+
+	todo, err := todoHandler.todoUsecase.GetByID(r.Context(), todoID)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, "Failed to fetch todo", err.Error())
+		return
+	}
+
+	if todo == nil {
+		utils.WriteError(w, http.StatusNotFound, "Todo not found", nil)
+		return
+	}
+
+	utils.WriteSuccess(w, http.StatusOK, "Todo retrieved successfully", todo)
 }

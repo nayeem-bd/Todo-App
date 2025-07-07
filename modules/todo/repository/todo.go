@@ -28,3 +28,14 @@ func (r *TodoRepository) Create(ctx context.Context, todo *domain.Todo) (*domain
 	}
 	return todo, nil
 }
+
+func (r *TodoRepository) GetByID(ctx context.Context, id int) (*domain.Todo, error) {
+	var todo domain.Todo
+	if err := r.db.First(&todo, id).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &todo, nil
+}
