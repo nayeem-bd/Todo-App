@@ -24,8 +24,8 @@ go.work
 /build/
 /dist/
 
-# Air live reload tool
-.air.toml
+## Air live reload tool
+#.air.toml
 
 # IDE and editor files
 .vscode/

@@ -1,0 +1,19 @@
+# .air.toml
+
+# Root directory
+root = "."
+tmp_dir = "tmp"
+
+# Build settings
+[build]
+cmd = "go build -o tmp/app cmd/main.go" # Build the binary to tmp/app
+bin = "tmp/app"                     # Output binary path
+include_ext = ["go"]
+exclude_dir = ["tmp", "vendor"]
+exclude_file = ["*_test.go"]
+delay = 500
+log = "tmp/air-build.log"
+
+# Log settings
+[log]
+time = true

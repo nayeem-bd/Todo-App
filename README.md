@@ -34,7 +34,7 @@ todo-app/
 │       ├── delivery/      # Delivery layer (adapters)
 │       │   └── http/      # HTTP handlers
 │       ├── repository/    # Data access layer
-│       │   └��─ todo.go    # Todo repository implementation
+│       │   └── todo.go    # Todo repository implementation
 │       └── usecase/       # Business logic layer
 │           └── todo.go    # Todo use cases
 ├── http/                  # HTTP infrastructure
@@ -327,17 +327,8 @@ air
 
 ### Testing
 ```bash
-# Run all tests
-go test ./...
-
-# Run tests with coverage
-go test -cover ./...
-
 # Run specific module tests
-go test ./modules/todo/...
-
-# Verbose testing
-go test -v ./...
+go test ./modules/todo/usecase -v
 ```
 
 ### Code Quality
