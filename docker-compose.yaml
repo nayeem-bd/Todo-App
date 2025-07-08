@@ -20,6 +20,23 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: todo-redis
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-""}
+#    ports:
+#      - "${REDIS_PORT:-6379}:6379"
+    networks:
+      - todo-network
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-h", "localhost", "-p", "6379", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   app:
     build: .
     container_name: todo-app
@@ -28,12 +45,17 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       - DB_HOST=${DB_HOST:-postgres}
       - DB_PORT=${DB_PORT:-5432}
       - DB_NAME=${DB_NAME:-todoapp}
       - DB_USER=${DB_USER:-root}
       - DB_PASSWORD=${DB_PASSWORD:-secret}
+      - REDIS_HOST=${REDIS_HOST:-todo-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-""}
     networks:
       - todo-network
     restart: unless-stopped
@@ -48,6 +70,7 @@ services:
 
 volumes:
   postgres_data:
+  redis_data:
 
 networks:
   todo-network:

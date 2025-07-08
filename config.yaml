@@ -16,3 +16,9 @@ database:
   max_connection_lifetime: 300
   batch_size: 10
   slow_threshold: 10
+
+redis:
+  host: 127.0.0.1
+  port: 6379
+  password: ""
+  db: 0

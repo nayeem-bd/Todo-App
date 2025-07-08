@@ -31,6 +31,10 @@ func main() {
 	// migrations
 	migrations.Migrate(db)
 
+	cache := config.ConnectRedis(cfg.Redis)
+
+	defer cache.Close()
+
 	addr := fmt.Sprintf(":%s", cfg.Server.Port)
 
 	r := chi.NewRouter()
@@ -42,7 +46,7 @@ func main() {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Heartbeat("/"))
 
-	handler := appHttp.RegisterHandlers(db)
+	handler := appHttp.RegisterHandlers(db, cache)
 	appHttp.SetupRouter(r, handler)
 
 	srv := &http.Server{Addr: addr, Handler: r, ReadTimeout: 10 * time.Second, WriteTimeout: 10 * time.Second, IdleTimeout: 120 * time.Second}

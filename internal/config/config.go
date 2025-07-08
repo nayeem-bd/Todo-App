@@ -9,6 +9,7 @@ import (
 type Config struct {
 	Server   ServerConfig
 	Database DatabaseConfig
+	Redis    RedisConfig
 }
 
 type ServerConfig struct {
@@ -27,6 +28,13 @@ type DatabaseConfig struct {
 	MaxConnectionLifetime int                 `mapstructure:"max_connection_lifetime"`
 	BatchSize             int                 `mapstructure:"batch_size"`
 	SlowThreshold         int                 `mapstructure:"slow_threshold"`
+}
+
+type RedisConfig struct {
+	Host     string `mapstructure:"host"`
+	Port     int    `mapstructure:"port"`
+	Password string `mapstructure:"password"`
+	DB       int    `mapstructure:"db"`
 }
 
 func LoadConfig(path string) (*Config, error) {
@@ -50,6 +58,12 @@ func LoadConfig(path string) (*Config, error) {
 	_ = v.BindEnv("database.name", "DB_NAME")
 	_ = v.BindEnv("database.username", "DB_USER")
 	_ = v.BindEnv("database.password", "DB_PASSWORD")
+
+	// Bind environment variables for Redis
+	_ = v.BindEnv("redis.host", "REDIS_HOST")
+	_ = v.BindEnv("redis.port", "REDIS_PORT")
+	_ = v.BindEnv("redis.password", "REDIS_PASSWORD")
+	_ = v.BindEnv("redis.db", "REDIS_DB")
 
 	if err := v.ReadInConfig(); err != nil {
 		logger.Warn("Warning: Failed to read config file: %v\n", err)
