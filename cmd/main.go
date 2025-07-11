@@ -10,6 +10,7 @@ import (
 	"github.com/nayeem-bd/Todo-App/internal/logger"
 	loggerMiddleware "github.com/nayeem-bd/Todo-App/internal/middleware"
 	"github.com/nayeem-bd/Todo-App/internal/migrations"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 	"os"
 	"os/signal"
@@ -45,6 +46,7 @@ func main() {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Heartbeat("/"))
+	r.Handle("/metrics", promhttp.Handler())
 
 	handler := appHttp.RegisterHandlers(db, cache)
 	appHttp.SetupRouter(r, handler)
