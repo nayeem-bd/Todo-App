@@ -12,10 +12,10 @@ type Handler struct {
 	TodoHandler *handler.TodoHandler
 }
 
-func RegisterHandlers(db *gorm.DB, cache *config.Cache) *Handler {
+func RegisterHandlers(db *gorm.DB, cache *config.Cache, queue *config.Queue) *Handler {
 	s := store.New(db)
 
-	todoUsecase := usecase.NewTodoUsecase(s, cache)
+	todoUsecase := usecase.NewTodoUsecase(s, cache, queue)
 
 	return &Handler{
 		TodoHandler: handler.NewTodoHandler(todoUsecase),

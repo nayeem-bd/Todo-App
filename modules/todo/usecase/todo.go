@@ -6,16 +6,18 @@ import (
 	"github.com/nayeem-bd/Todo-App/domain"
 	"github.com/nayeem-bd/Todo-App/internal/config"
 	"github.com/nayeem-bd/Todo-App/internal/store"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"time"
 )
 
 type TodoUsecase struct {
 	store  store.Store
 	cacher *config.Cache
+	queue  *config.Queue
 }
 
-func NewTodoUsecase(store store.Store, cacher *config.Cache) *TodoUsecase {
-	return &TodoUsecase{store: store, cacher: cacher}
+func NewTodoUsecase(store store.Store, cacher *config.Cache, queue *config.Queue) *TodoUsecase {
+	return &TodoUsecase{store: store, cacher: cacher, queue: queue}
 }
 
 func (todoUsecase *TodoUsecase) GetAll(ctx context.Context) ([]*domain.Todo, error) {
@@ -56,4 +58,40 @@ func (todoUsecase *TodoUsecase) Create(ctx context.Context, todo *domain.Todo) (
 
 func (todoUsecase *TodoUsecase) GetByID(ctx context.Context, id int) (*domain.Todo, error) {
 	return todoUsecase.store.TodoRepository().GetByID(ctx, id)
+}
+
+func (todoUsecase *TodoUsecase) Complete(ctx context.Context, id int) error {
+	todo, err := todoUsecase.GetByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	ch, err := todoUsecase.queue.Conn.Channel()
+	if err != nil {
+		return err
+	}
+	defer ch.Close()
+
+	message := map[string]interface{}{
+		"todo_id": todo.ID,
+		"event":   "todo_completed",
+	}
+
+	messageBytes, err := json.Marshal(message)
+	if err != nil {
+		return err
+	}
+
+	err = ch.Publish(
+		todoUsecase.queue.ExchangeName,
+		todoUsecase.queue.RoutingKey,
+		false,
+		false,
+		amqp.Publishing{
+			ContentType: "application/json",
+			Body:        messageBytes,
+		},
+	)
+
+	return err
 }

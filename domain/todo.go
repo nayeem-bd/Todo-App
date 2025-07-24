@@ -29,4 +29,5 @@ type TodoUsecase interface {
 	GetAll(ctx context.Context) ([]*Todo, error)
 	Create(ctx context.Context, todo *Todo) (*Todo, error)
 	GetByID(ctx context.Context, id int) (*Todo, error)
+	Complete(ctx context.Context, id int) error
 }

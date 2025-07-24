@@ -3,7 +3,8 @@ server:
 
 database:
 #  host: 127.0.0.1
-  host: docker.for.mac.localhost
+#  host: docker.for.mac.localhost
+  host: host.docker.internal
   port: 5432
   name: todoapp
   username: root
@@ -19,7 +20,21 @@ database:
 
 redis:
 #  host: 127.0.0.1
-  host: docker.for.mac.localhost
+#  host: docker.for.mac.localhost
+  host: host.docker.internal
   port: 6379
   password: ""
   db: 0
+
+rabbitmq:
+#  host: docker.for.mac.localhost
+  host: host.docker.internal
+  port: 5672
+  user: guest
+  password: guest
+  queue_name: todo_queue
+  exchange_name: todo_exchange
+  exchange_type: topic
+  routing_key: "#.notification"
+  prefetch_count: 1
+  worker_pool_count: 2

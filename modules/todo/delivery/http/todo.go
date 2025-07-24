@@ -84,3 +84,25 @@ func (todoHandler *TodoHandler) GetTodoByID(w http.ResponseWriter, r *http.Reque
 
 	utils.WriteSuccess(w, http.StatusOK, "Todo retrieved successfully", todo)
 }
+
+func (todoHandler *TodoHandler) CompleteTodo(w http.ResponseWriter, r *http.Request) {
+	todoIDStr := chi.URLParam(r, "id")
+	if todoIDStr == "" {
+		utils.WriteError(w, http.StatusBadRequest, "Todo ID is required", nil)
+		return
+	}
+
+	todoID, err := strconv.Atoi(todoIDStr)
+	if err != nil {
+		utils.WriteError(w, http.StatusBadRequest, "Invalid todo ID format", nil)
+		return
+	}
+
+	err = todoHandler.todoUsecase.Complete(r.Context(), todoID)
+	if err != nil {
+		utils.WriteError(w, http.StatusUnprocessableEntity, "Failed to complete todo", err.Error())
+		return
+	}
+
+	utils.WriteSuccess(w, http.StatusOK, "Todo completed successfully", nil)
+}

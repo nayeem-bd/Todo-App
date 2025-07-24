@@ -4,18 +4,19 @@ A RESTful Todo application built with Go, featuring clean architecture principle
 
 ## 🚀 Features
 
-- **CRUD Operations**: Create, read, update, and delete todos
-- **Clean Architecture**: Organized with domain-driven design patterns
+- **RESTful API**: Create, read, and mark todos as complete
+- **Clean Architecture**: Organized with domain-driven design and hexagonal architecture patterns
 - **PostgreSQL Database**: Persistent storage with GORM ORM
+- **Redis Caching**: High-performance caching for improved response times
+- **RabbitMQ Messaging**: Event-driven architecture for todo completion notifications
 - **Docker Support**: Containerized application with Docker Compose
-- **Environment Configuration**: Flexible configuration via environment variables
-- **Validation**: Request validation using go-playground/validator
-- **Configuration**: YAML-based configuration with Viper
-- **HTTP Router**: Fast routing with Chi router
-- **Graceful Shutdown**: Proper server shutdown handling
-- **Health Checks**: Application and database health monitoring
-- **Hot Reload**: Development support with Air
-- **Structured Logging**: Logrus for production-ready logging
+- **Environment Configuration**: Flexible configuration via YAML files and environment variables
+- **Input Validation**: Request validation using go-playground/validator
+- **Prometheus Metrics**: Built-in metrics endpoint for monitoring
+- **Chi Router**: Fast and lightweight HTTP routing
+- **Graceful Shutdown**: Proper server shutdown handling with context cancellation
+- **Structured Logging**: Production-ready logging with Logrus
+- **Request Middleware**: Logger, recovery, and real IP detection
 
 ## 🏗️ Architecture
 
@@ -23,42 +24,41 @@ The application follows **Clean Architecture** principles with hexagonal archite
 
 ```
 todo-app/
-├── cmd/                    # Application entry point
-│   └── main.go            # Main application bootstrap
-├── domain/                 # Business entities and core logic
-│   ├── todo.go            # Todo entity/model
-│   └── dto/               # Data Transfer Objects
-│       └── todo.go        # Todo request/response DTOs
-├── modules/               # Feature modules (Hexagonal Architecture)
-│   └── todo/              # Todo bounded context
-│       ├── delivery/      # Delivery layer (adapters)
-│       │   └── http/      # HTTP handlers
-│       ├── repository/    # Data access layer
-│       │   └── todo.go    # Todo repository implementation
-│       └── usecase/       # Business logic layer
-│           └── todo.go    # Todo use cases
-├── http/                  # HTTP infrastructure
-│   ├── handlers.go        # HTTP route handlers
-│   └── routes.go          # Route definitions
-├── internal/              # Private application packages
-│   ├── config/            # Configuration management
-│   │   ├── config.go      # Config structures and loading
-│   │   └── database.go    # Database configuration
-│   ├── logger/            # Logging utilities
-│   │   └── logger.go      # Structured logging setup
-│   ├── middleware/        # HTTP middleware
-│   │   └── logger.go      # Request logging middleware
-│   ├── store/             # Database connection
-│   │   └── store.go       # Database initialization
-│   └── utils/             # Shared utilities
-│       ├── response.go    # HTTP response helpers
-│       └── validator.go   # Request validation
-├── config.yaml           # Application configuration
-├── docker-compose.yaml   # Docker orchestration
-├── Dockerfile            # Container definition
-├── .air.toml             # Hot reload configuration
-├── .dockerignore         # Docker build exclusions
-└── Makefile              # Build automation
+├── main.go                # Application bootstrap
+├── cmd/                   # Application entry point
+│   └── serve.go          # Server setup and configuration
+├── domain/               # Business entities and core logic
+│   ├── todo.go          # Todo entity, repository & usecase interfaces
+│   └── dto/             # Data Transfer Objects
+│       └── todo.go      # Todo request/response DTOs
+├── modules/             # Feature modules (Hexagonal Architecture)
+│   └── todo/            # Todo bounded context
+│       ├── delivery/    # Delivery layer (adapters)
+│       │   └── http/    # HTTP handlers
+│       │       └── todo.go
+│       ├── repository/  # Data access layer
+│       │   └── todo.go  # Todo repository implementation
+│       └── usecase/     # Business logic layer
+│           ├── todo.go  # Todo use cases
+│           └── todo_test.go
+├── http/                # HTTP layer setup
+│   ├── handlers.go      # Handler registration
+│   └── routes.go        # Route definitions
+├── internal/            # Private application code
+│   ├── config/          # Configuration management
+│   │   ├── config.go    # Config structures and loading
+│   │   ├── database.go  # Database connection setup
+│   │   ├── redis.go     # Redis connection setup
+│   │   └── queue.go     # RabbitMQ connection setup
+│   ├── logger/          # Structured logging
+│   ├── middleware/      # HTTP middlewares
+│   ├── migrations/      # Database migrations
+│   ├── store/          # Repository store pattern
+│   └── utils/          # Utility functions (response, validation)
+├── deployment/         # Kubernetes deployment files
+├── config.yaml        # Application configuration
+├── docker-compose.yaml # Docker services setup
+└── Dockerfile         # Application container
 ```
 
 ### Architecture Layers
@@ -143,7 +143,7 @@ todo-app/
    air
 
    # Or run directly
-   go run cmd/main.go
+   go run main.go
    ```
 
 ### Option 3: Using Makefile
@@ -218,6 +218,13 @@ docker system prune          # Clean up unused resources
 | GET    | `/api/v1/todos` | List all todos | - | Array of todos |
 | GET    | `/api/v1/todos/{id}` | Get todo by ID | - | Single todo object |
 | POST   | `/api/v1/todos` | Create new todo | Todo object | Created todo |
+| POST   | `/api/v1/todos/{id}/complete` | Mark todo as complete | - | Success message |
+
+### System Endpoints
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET    | `/` | Health check |
+| GET    | `/metrics` | Prometheus metrics |
 
 ### Request/Response Format
 
@@ -248,9 +255,7 @@ docker system prune          # Clean up unused resources
 {
   "success": true,
   "message": "Todo created successfully",
-  "data": {
-    // Todo object or array of todos
-  }
+  "data": {}
 }
 ```
 
@@ -260,9 +265,7 @@ docker system prune          # Clean up unused resources
   "error": true,
   "message": "Validation failed",
   "status_code": 400,
-  "errors": {
-    // Validation errors or error details
-  }
+  "errors": {}
 }
 ```
 
@@ -530,7 +533,7 @@ go mod tidy && go mod verify
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
 ## 👨‍💻 Author
 

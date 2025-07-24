@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"context"
@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-func main() {
+func Serve() {
 	cfg, err := config.LoadConfig(".")
 	if err != nil {
 		logger.Fatal("Failed to load config:", err)
@@ -36,6 +36,12 @@ func main() {
 
 	defer cache.Close()
 
+	queue, err := config.SetupRabbitMQConnection(cfg.RabbitMQ)
+
+	if err != nil {
+		logger.Fatal("Failed to connect to RabbitMQ:", err)
+	}
+
 	addr := fmt.Sprintf(":%s", cfg.Server.Port)
 
 	r := chi.NewRouter()
@@ -48,7 +54,7 @@ func main() {
 	r.Use(middleware.Heartbeat("/"))
 	r.Handle("/metrics", promhttp.Handler())
 
-	handler := appHttp.RegisterHandlers(db, cache)
+	handler := appHttp.RegisterHandlers(db, cache, queue)
 	appHttp.SetupRouter(r, handler)
 
 	srv := &http.Server{Addr: addr, Handler: r, ReadTimeout: 10 * time.Second, WriteTimeout: 10 * time.Second, IdleTimeout: 120 * time.Second}

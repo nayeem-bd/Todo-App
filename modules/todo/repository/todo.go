@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"github.com/nayeem-bd/Todo-App/domain"
 	"gorm.io/gorm"
 )
@@ -32,7 +33,7 @@ func (r *TodoRepository) Create(ctx context.Context, todo *domain.Todo) (*domain
 func (r *TodoRepository) GetByID(ctx context.Context, id int) (*domain.Todo, error) {
 	var todo domain.Todo
 	if err := r.db.First(&todo, id).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
 		return nil, err

@@ -11,6 +11,7 @@ func SetupRouter(r *chi.Mux, h *Handler) http.Handler {
 			r.Get("/", h.TodoHandler.GetTodos)
 			r.Post("/", h.TodoHandler.CreateTodo)
 			r.Get("/{id}", h.TodoHandler.GetTodoByID)
+			r.Post("/{id}/complete", h.TodoHandler.CompleteTodo)
 		})
 	})
 
