@@ -15,4 +15,8 @@ func main() {
 	if args[1] == "serve" {
 		cmd.Serve()
 	}
+
+	if args[1] == "work" {
+		cmd.Work()
+	}
 }

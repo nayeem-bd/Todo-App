@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/nayeem-bd/Todo-App/domain"
 	"github.com/nayeem-bd/Todo-App/internal/config"
+	"github.com/nayeem-bd/Todo-App/internal/logger"
 	"github.com/nayeem-bd/Todo-App/internal/store"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"time"
@@ -92,6 +93,23 @@ func (todoUsecase *TodoUsecase) Complete(ctx context.Context, id int) error {
 			Body:        messageBytes,
 		},
 	)
+
+	return err
+}
+
+func (todoUsecase *TodoUsecase) CompleteTodo(ctx context.Context, id int) error {
+	todo, err := todoUsecase.GetByID(ctx, id)
+	if err != nil {
+		return err
+	}
+	if todo.DoneAt != nil {
+		logger.Info("Todo already completed", "todo_id", todo.ID)
+		return nil
+	}
+	now := time.Now()
+	todo.DoneAt = &now
+
+	_, err = todoUsecase.store.TodoRepository().Update(ctx, todo)
 
 	return err
 }

@@ -40,3 +40,10 @@ func (r *TodoRepository) GetByID(ctx context.Context, id int) (*domain.Todo, err
 	}
 	return &todo, nil
 }
+
+func (r *TodoRepository) Update(ctx context.Context, todo *domain.Todo) (*domain.Todo, error) {
+	if err := r.db.Save(todo).Error; err != nil {
+		return nil, err
+	}
+	return todo, nil
+}

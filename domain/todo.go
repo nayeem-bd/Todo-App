@@ -23,6 +23,7 @@ type TodoRepository interface {
 	GetAll(ctx context.Context) ([]*Todo, error)
 	Create(ctx context.Context, todo *Todo) (*Todo, error)
 	GetByID(ctx context.Context, id int) (*Todo, error)
+	Update(ctx context.Context, todo *Todo) (*Todo, error)
 }
 
 type TodoUsecase interface {
@@ -30,4 +31,5 @@ type TodoUsecase interface {
 	Create(ctx context.Context, todo *Todo) (*Todo, error)
 	GetByID(ctx context.Context, id int) (*Todo, error)
 	Complete(ctx context.Context, id int) error
+	CompleteTodo(ctx context.Context, id int) error
 }

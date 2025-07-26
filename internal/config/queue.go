@@ -9,7 +9,7 @@ import (
 type Queue struct {
 	Conn         *amqp.Connection
 	ExchangeName string
-	queueName    string
+	QueueName    string
 	RoutingKey   string
 }
 
@@ -81,7 +81,7 @@ func SetupRabbitMQConnection(config RabbitMQConfig) (*Queue, error) {
 	log.Printf("RabbitMQ connection established and queue configured successfully")
 	return &Queue{Conn: conn,
 		ExchangeName: config.ExchangeName,
-		queueName:    config.QueueName,
+		QueueName:    config.QueueName,
 		RoutingKey:   config.RoutingKey,
 	}, nil
 }

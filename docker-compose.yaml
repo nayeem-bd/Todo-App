@@ -97,6 +97,48 @@ services:
           cpus: '0.1'
           memory: 256M
 
+  worker:
+    build: .
+    container_name: todo-app-worker
+    command: ["./main", "work"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - DB_HOST=${DB_HOST:-postgres}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_NAME=${DB_NAME:-todoapp}
+      - DB_USER=${DB_USER:-root}
+      - DB_PASSWORD=${DB_PASSWORD:-secret}
+      - REDIS_HOST=${REDIS_HOST:-todo-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-""}
+      - RABBITMQ_HOST=${RABBITMQ_HOST:-todo-rabbitmq}
+      - RABBITMQ_PORT=${RABBITMQ_PORT:-5672}
+      - RABBITMQ_USER=${RABBITMQ_USER:-guest}
+      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD:-guest}
+      - RABBITMQ_QUEUE_NAME=${RABBITMQ_QUEUE_NAME:-todo_queue}
+      - RABBITMQ_EXCHANGE_NAME=${RABBITMQ_EXCHANGE_NAME:-todo_exchange}
+      - RABBITMQ_EXCHANGE_TYPE=${RABBITMQ_EXCHANGE_TYPE:-topic}
+      - RABBITMQ_ROUTING_KEY=${RABBITMQ_ROUTING_KEY:-"#.notification"}
+      - RABBITMQ_PREFETCH_COUNT=${RABBITMQ_PREFETCH_COUNT:-1}
+      - RABBITMQ_WORKER_POOL_COUNT=${RABBITMQ_WORKER_POOL_COUNT:-2}
+    networks:
+      - todo-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.1'
+          memory: 256M
+
 volumes:
   postgres_data:
   redis_data:
