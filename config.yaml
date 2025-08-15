@@ -21,8 +21,9 @@ database:
 redis:
 #  host: 127.0.0.1
 #  host: docker.for.mac.localhost
-  host: host.docker.internal
-  port: 6379
+#  host: host.docker.internal  # For Docker Compose
+  host: redis
+  port: "6379"
   password: ""
   db: 0
 

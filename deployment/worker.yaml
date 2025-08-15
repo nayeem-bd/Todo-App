@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-worker-deployment
+  labels:
+    app: todo-worker
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-worker
+  template:
+    metadata:
+      labels:
+        app: todo-worker
+    spec:
+      containers:
+        - name: todo-worker
+          image: nayeembd/todo-app:1.0.0
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: "5m"
+              memory: "64Mi"
+            limits:
+              cpu: "50m"
+              memory: "128Mi"
+          command: ["./main", "work"]
+#          env:
+#            - name: DB_HOST
+#              value: "docker.for.mac.localhost"
+#            - name: DB_PORT
+#              value: "5432"
+#            - name: DB_NAME
+#              value: "todoapp"
+#            - name: DB_USER
+#              value: "root"
+#            - name: DB_PASSWORD
+#              value: "secret"
+#            - name: REDIS_HOST
+#              value: "docker.for.mac.localhost"
+#            - name: REDIS_PORT
+#              value: "6379"
+#            - name: REDIS_PASSWORD
+#              value: ""
+#            - name: RABBITMQ_HOST
+#              value: "docker.for.mac.localhost"
+#            - name: RABBITMQ_PORT
+#              value: "5672"
+#            - name: RABBITMQ_USER
+#              value: "guest"
+#            - name: RABBITMQ_PASSWORD
+#              value: "guest"
+#            - name: RABBITMQ_QUEUE_NAME
+#              value: "todo_queue"
+#            - name: RABBITMQ_EXCHANGE_NAME
+#              value: "todo_exchange"
+#            - name: RABBITMQ_EXCHANGE_TYPE
+#              value: "topic"
+#            - name: RABBITMQ_ROUTING_KEY
+#              value: "#.notification"
+#            - name: RABBITMQ_PREFETCH_COUNT
+#              value: "1"
+#            - name: RABBITMQ_WORKER_POOL_COUNT
+#              value: "2"

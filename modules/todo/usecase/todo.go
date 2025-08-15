@@ -103,7 +103,7 @@ func (todoUsecase *TodoUsecase) CompleteTodo(ctx context.Context, id int) error 
 		return err
 	}
 	if todo.DoneAt != nil {
-		logger.Info("Todo already completed", "todo_id", todo.ID)
+		logger.Info("Todo already completed ", "todo_id: ", todo.ID)
 		return nil
 	}
 	now := time.Now()
