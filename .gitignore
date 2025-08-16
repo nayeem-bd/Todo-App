@@ -80,3 +80,9 @@ debug
 
 # Go modules download cache
 go.sum.backup
+
+*.lock.hcl
+*.tfstate
+*.tfstate.backup
+*.terraform
+tfplan

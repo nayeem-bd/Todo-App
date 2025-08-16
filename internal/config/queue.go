@@ -1,6 +1,7 @@
 package config
 
 import (
+	"crypto/tls"
 	"fmt"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"log"
@@ -14,9 +15,13 @@ type Queue struct {
 }
 
 func SetupRabbitMQConnection(config RabbitMQConfig) (*Queue, error) {
-	connectionUrl := fmt.Sprintf("amqp://%s:%s@%s:%d/", config.Username, config.Password, config.Host, config.Port)
+	connectionUrl := fmt.Sprintf("amqps://%s:%s@%s:%d/", config.Username, config.Password, config.Host, config.Port)
 
-	conn, err := amqp.Dial(connectionUrl)
+	tlsConfig := &tls.Config{
+		MinVersion: tls.VersionTLS12,
+	}
+
+	conn, err := amqp.DialTLS(connectionUrl, tlsConfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to RabbitMQ: %w", err)
 	}
