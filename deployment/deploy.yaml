@@ -84,7 +84,7 @@ spec:
       containers:
         - name: todo-app
           image: nayeembd/todo-app:1.0.0
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           resources:
