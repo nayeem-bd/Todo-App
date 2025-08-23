@@ -48,7 +48,7 @@ jobs:
           source: "deployment/redis-deploy.yaml,deployment/deploy.yaml,deployment/worker.yaml"
           target: "/tmp/"
 
-      - name: Deploy Redis
+      - name: Deploy to Kubernetes
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -56,6 +56,10 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
+            # Use the user-accessible kubeconfig set up by Ansible
+            export KUBECONFIG=~/.kube/config
+            
+            # Apply deployments
             kubectl apply -f /tmp/deployment/redis-deploy.yaml
             kubectl apply -f /tmp/deployment/deploy.yaml
             kubectl apply -f /tmp/deployment/worker.yaml
