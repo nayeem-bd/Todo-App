@@ -81,6 +81,7 @@ spec:
       labels:
         app: todo-app
     spec:
+      enableServiceLinks: false
       containers:
         - name: todo-app
           image: nayeembd/todo-app:1.0.0

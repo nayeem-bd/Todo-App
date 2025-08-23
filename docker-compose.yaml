@@ -73,7 +73,7 @@ services:
       - DB_USER=${DB_USER:-root}
       - DB_PASSWORD=${DB_PASSWORD:-secret}
       - REDIS_HOST=${REDIS_HOST:-todo-redis}
-      - REDIS_PORT=${REDIS_PORT:-6379}
+#      - REDIS_PORT=${REDIS_PORT:-6379}
       - REDIS_PASSWORD=${REDIS_PASSWORD:-""}
       - RABBITMQ_HOST=${RABBITMQ_HOST:-todo-rabbitmq}
       - RABBITMQ_PORT=${RABBITMQ_PORT:-5672}
