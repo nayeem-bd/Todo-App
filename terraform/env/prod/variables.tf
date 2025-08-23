@@ -103,3 +103,8 @@ variable "users" {
     password = string
   }))
 }
+
+variable "db_name" {
+  description = "The name of the database to create when the RDS instance is created"
+  type        = string
+}

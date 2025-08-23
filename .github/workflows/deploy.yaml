@@ -56,9 +56,9 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
-            kubectl apply -f /tmp/redis-deploy.yaml
-            kubectl apply -f /tmp/deploy.yaml
-            kubectl apply -f /tmp/worker.yaml
+            kubectl apply -f /tmp/deployment/redis-deploy.yaml
+            kubectl apply -f /tmp/deployment/deploy.yaml
+            kubectl apply -f /tmp/deployment/worker.yaml
             
             echo "Checking rollout status..."
             kubectl rollout status deployment/redis || true

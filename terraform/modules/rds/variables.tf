@@ -18,6 +18,11 @@ variable "vpc_id" {
     type        = string
 }
 
+variable "db_name" {
+    description = "The name of the database to create when the RDS instance is created"
+    type        = string
+}
+
 variable "tags" {
     description = "A map of tags to assign to the RDS instance"
     type        = map(string)

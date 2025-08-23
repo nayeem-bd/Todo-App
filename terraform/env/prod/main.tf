@@ -37,17 +37,18 @@ module "rds" {
   source     = "../../modules/rds"
   username   = var.username
   password   = var.password
+  db_name    = var.db_name
   subnet_ids = module.vpc.private_subnet_ids
   vpc_id     = module.vpc.vpc_id
   tags       = var.tags
 }
 
 module "mq" {
-  source              = "../../modules/mq"
-  broker_name         = var.broker_name
-  users               = var.users
-  subnet_ids          = module.vpc.private_subnet_ids
-  vpc_id              = module.vpc.vpc_id
+  source             = "../../modules/mq"
+  broker_name        = var.broker_name
+  users              = var.users
+  subnet_ids         = module.vpc.private_subnet_ids
+  vpc_id             = module.vpc.vpc_id
   security_group_ids = [module.ec2.ec2_sg_id]
-  tags                = var.tags
+  tags               = var.tags
 }

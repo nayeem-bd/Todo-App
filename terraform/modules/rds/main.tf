@@ -29,6 +29,7 @@ resource "aws_db_instance" "rds_instance" {
     engine = "postgres"
     engine_version = "17.5"
     allocated_storage = 20
+    db_name = var.db_name
     username = var.username
     password = var.password
     publicly_accessible = false

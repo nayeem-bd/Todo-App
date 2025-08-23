@@ -53,6 +53,7 @@
         enabled: yes
 
     - name: Create .kube directory for ansible user
+      become: yes
       file:
         path: /home/{{ ansible_user }}/.kube
         state: directory
@@ -70,6 +71,7 @@
         mode: '0600'
 
     - name: Set KUBECONFIG environment variable for ansible user
+      become: yes
       lineinfile:
         path: /home/{{ ansible_user }}/.bashrc
         line: 'export KUBECONFIG=/home/{{ ansible_user }}/.kube/config'
