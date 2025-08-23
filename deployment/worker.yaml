@@ -15,6 +15,7 @@ spec:
       labels:
         app: todo-worker
     spec:
+      enableServiceLinks: false
       containers:
         - name: todo-worker
           image: nayeembd/todo-app:1.0.0
