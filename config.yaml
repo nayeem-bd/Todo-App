@@ -1,5 +1,6 @@
 server:
   port: "8080"
+  env: local
 
 database:
 #  host: 127.0.0.1

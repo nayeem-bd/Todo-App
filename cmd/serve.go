@@ -3,19 +3,20 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-	appHttp "github.com/nayeem-bd/Todo-App/http"
-	"github.com/nayeem-bd/Todo-App/internal/config"
-	"github.com/nayeem-bd/Todo-App/internal/logger"
-	loggerMiddleware "github.com/nayeem-bd/Todo-App/internal/middleware"
-	"github.com/nayeem-bd/Todo-App/internal/migrations"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	appHttp "github.com/nayeem-bd/Todo-App/http"
+	"github.com/nayeem-bd/Todo-App/internal/config"
+	"github.com/nayeem-bd/Todo-App/internal/logger"
+	customMiddleware "github.com/nayeem-bd/Todo-App/internal/middleware"
+	"github.com/nayeem-bd/Todo-App/internal/migrations"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func Serve() {
@@ -36,7 +37,7 @@ func Serve() {
 
 	defer cache.Close()
 
-	queue, err := config.SetupRabbitMQConnection(cfg.RabbitMQ)
+	queue, err := config.SetupRabbitMQConnection(cfg.RabbitMQ, cfg.Server)
 
 	if err != nil {
 		logger.Fatal("Failed to connect to RabbitMQ:", err)
@@ -48,10 +49,11 @@ func Serve() {
 
 	//middlewares
 	r.Use(middleware.RequestID)
-	r.Use(loggerMiddleware.Logger)
+	r.Use(customMiddleware.Logger)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Heartbeat("/"))
+	r.Use(customMiddleware.Prometheus)
 	r.Handle("/metrics", promhttp.Handler())
 
 	handler := appHttp.RegisterHandlers(db, cache, queue)

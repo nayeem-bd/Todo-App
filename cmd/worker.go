@@ -19,7 +19,7 @@ func Work() {
 
 	cache := config.ConnectRedis(cfg.Redis)
 
-	queue, err := config.SetupRabbitMQConnection(cfg.RabbitMQ)
+	queue, err := config.SetupRabbitMQConnection(cfg.RabbitMQ, cfg.Server)
 
 	if err != nil {
 		logger.Fatal("Failed to connect to RabbitMQ:", err)

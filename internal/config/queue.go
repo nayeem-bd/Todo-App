@@ -3,8 +3,9 @@ package config
 import (
 	"crypto/tls"
 	"fmt"
-	amqp "github.com/rabbitmq/amqp091-go"
 	"log"
+
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 type Queue struct {
@@ -14,14 +15,22 @@ type Queue struct {
 	RoutingKey   string
 }
 
-func SetupRabbitMQConnection(config RabbitMQConfig) (*Queue, error) {
-	connectionUrl := fmt.Sprintf("amqps://%s:%s@%s:%d/", config.Username, config.Password, config.Host, config.Port)
+func SetupRabbitMQConnection(config RabbitMQConfig, serverConfig ServerConfig) (*Queue, error) {
+	var conn *amqp.Connection
+	var err error
 
-	tlsConfig := &tls.Config{
-		MinVersion: tls.VersionTLS12,
+	if serverConfig.Env == "local" {
+		connectionUrl := fmt.Sprintf("amqp://%s:%s@%s:%d/", config.Username, config.Password, config.Host, config.Port)
+		conn, err = amqp.Dial(connectionUrl)
+	} else {
+		connectionUrl := fmt.Sprintf("amqps://%s:%s@%s:%d/", config.Username, config.Password, config.Host, config.Port)
+
+		tlsConfig := &tls.Config{
+			MinVersion: tls.VersionTLS12,
+		}
+
+		conn, err = amqp.DialTLS(connectionUrl, tlsConfig)
 	}
-
-	conn, err := amqp.DialTLS(connectionUrl, tlsConfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to RabbitMQ: %w", err)
 	}

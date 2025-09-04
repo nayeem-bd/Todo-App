@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+
 	"github.com/nayeem-bd/Todo-App/internal/logger"
 	"github.com/spf13/viper"
 )
@@ -15,6 +16,7 @@ type Config struct {
 
 type ServerConfig struct {
 	Port string `mapstructure:"port"`
+	Env  string `mapstructure:"env"`
 }
 
 type DatabaseConfig struct {
@@ -65,6 +67,7 @@ func LoadConfig(path string) (*Config, error) {
 
 	// Bind environment variables for server
 	_ = v.BindEnv("server.port")
+	_ = v.BindEnv("server.env", "APP_ENV")
 
 	// Bind environment variables for database
 	_ = v.BindEnv("database.host", "DB_HOST")
